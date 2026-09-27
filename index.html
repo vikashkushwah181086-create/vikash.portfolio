@@ -1,0 +1,3242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FRAMEFORGE — Video Editor & Graphic Designer</title>
+
+<meta name="description"
+content="Premium Video Editing, Motion Graphics, VFX and Graphic Design Portfolio">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* =========================================================
+   ROOT
+========================================================= */
+
+:root{
+    --bg:#050509;
+    --bg2:#090912;
+    --card:rgba(255,255,255,.045);
+
+    --white:#ffffff;
+    --muted:#9b9ba9;
+
+    --blue:#00d9ff;
+    --purple:#8b5cff;
+    --pink:#ff35c9;
+    --orange:#ff7a18;
+
+    --border:rgba(255,255,255,.11);
+
+    --radius:22px;
+
+    --max:1250px;
+}
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:var(--bg);
+    color:white;
+    font-family:Inter,sans-serif;
+    overflow-x:hidden;
+}
+
+body::selection{
+    background:var(--purple);
+    color:white;
+}
+
+a{
+    color:inherit;
+    text-decoration:none;
+}
+
+button{
+    font-family:inherit;
+}
+
+/* =========================================================
+   NOISE
+========================================================= */
+
+.noise{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:999;
+    opacity:.045;
+
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+
+/* =========================================================
+   CANVAS VFX
+========================================================= */
+
+#vfxCanvas{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:-5;
+}
+
+/* =========================================================
+   CURSOR
+========================================================= */
+
+.cursor{
+    position:fixed;
+    width:18px;
+    height:18px;
+    border:1px solid rgba(255,255,255,.7);
+    border-radius:50%;
+    pointer-events:none;
+    z-index:1000;
+    transform:translate(-50%,-50%);
+    transition:
+        width .25s,
+        height .25s,
+        background .25s,
+        border .25s;
+}
+
+.cursor-glow{
+    position:fixed;
+    width:300px;
+    height:300px;
+    border-radius:50%;
+    pointer-events:none;
+    z-index:-1;
+
+    background:
+    radial-gradient(
+        circle,
+        rgba(123,76,255,.13),
+        transparent 65%
+    );
+
+    transform:translate(-50%,-50%);
+}
+
+/* =========================================================
+   NAVBAR
+========================================================= */
+
+.nav{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    z-index:100;
+
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+
+    background:rgba(5,5,9,.55);
+    border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.nav-inner{
+    width:min(var(--max),92%);
+    height:78px;
+    margin:auto;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-family:"Space Grotesk";
+    font-weight:700;
+    letter-spacing:-.5px;
+}
+
+.logo-mark{
+    width:38px;
+    height:38px;
+    border-radius:12px;
+
+    display:grid;
+    place-items:center;
+
+    background:
+    linear-gradient(
+        135deg,
+        var(--blue),
+        var(--purple),
+        var(--pink)
+    );
+
+    box-shadow:
+    0 0 25px rgba(139,92,255,.45);
+}
+
+.logo-mark::before{
+    content:"▶";
+    color:white;
+    font-size:15px;
+}
+
+.logo small{
+    display:block;
+    color:#858591;
+    font-size:8px;
+    letter-spacing:2px;
+    margin-top:2px;
+}
+
+.nav-links{
+    display:flex;
+    gap:30px;
+    align-items:center;
+}
+
+.nav-links a{
+    font-size:12px;
+    color:#a6a6b1;
+    transition:.3s;
+}
+
+.nav-links a:hover{
+    color:white;
+}
+
+.nav-btn{
+    padding:11px 20px;
+    border-radius:100px;
+    font-size:11px;
+    font-weight:700;
+
+    background:
+    linear-gradient(
+        90deg,
+        var(--blue),
+        var(--purple),
+        var(--pink)
+    );
+
+    box-shadow:0 0 25px rgba(113,74,255,.3);
+}
+
+.menu{
+    display:none;
+    font-size:25px;
+    cursor:pointer;
+}
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+.container{
+    width:min(var(--max),92%);
+    margin:auto;
+}
+
+section{
+    position:relative;
+    padding:120px 0;
+}
+
+.eyebrow{
+    font-size:10px;
+    letter-spacing:4px;
+    color:var(--blue);
+    text-transform:uppercase;
+    font-weight:700;
+    margin-bottom:16px;
+}
+
+.section-title{
+    font-family:"Space Grotesk";
+    font-size:clamp(40px,5vw,72px);
+    line-height:.95;
+    letter-spacing:-3px;
+}
+
+.section-title span{
+    background:
+    linear-gradient(
+        90deg,
+        var(--blue),
+        var(--purple),
+        var(--pink),
+        var(--orange)
+    );
+
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+.section-desc{
+    color:#898995;
+    max-width:600px;
+    line-height:1.8;
+    font-size:14px;
+    margin-top:22px;
+}
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero{
+    min-height:100vh;
+    padding-top:160px;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+}
+
+.hero::before{
+    content:"";
+    position:absolute;
+
+    width:700px;
+    height:700px;
+
+    left:35%;
+    top:0;
+
+    background:
+    radial-gradient(
+        circle,
+        rgba(128,70,255,.22),
+        transparent 65%
+    );
+
+    filter:blur(30px);
+}
+
+.hero-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:60px;
+    align-items:center;
+}
+
+.hero-content{
+    position:relative;
+    z-index:2;
+}
+
+.hero h1{
+    font-family:"Space Grotesk";
+    font-size:clamp(55px,7vw,105px);
+    line-height:.88;
+    letter-spacing:-6px;
+}
+
+.hero h1 .line{
+    display:block;
+}
+
+.hero h1 .gradient{
+    background:
+    linear-gradient(
+        90deg,
+        #fff,
+        #61e8ff,
+        #9a6cff,
+        #ff3ed0
+    );
+
+    -webkit-background-clip:text;
+    color:transparent;
+
+    background-size:200% auto;
+
+    animation:
+    gradientMove 5s linear infinite;
+}
+
+@keyframes gradientMove{
+    to{
+        background-position:200% center;
+    }
+}
+
+.hero-desc{
+    margin-top:28px;
+    max-width:560px;
+    color:#92929d;
+    line-height:1.8;
+    font-size:14px;
+}
+
+.hero-buttons{
+    display:flex;
+    gap:15px;
+    margin-top:35px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+
+    padding:15px 25px;
+    border-radius:100px;
+
+    font-size:12px;
+    font-weight:700;
+
+    border:1px solid rgba(255,255,255,.15);
+
+    transition:
+    transform .3s,
+    box-shadow .3s;
+}
+
+.btn-primary{
+    background:
+    linear-gradient(
+        100deg,
+        var(--blue),
+        var(--purple),
+        var(--pink)
+    );
+
+    box-shadow:
+    0 10px 45px rgba(113,74,255,.3);
+}
+
+.btn-outline{
+    background:rgba(255,255,255,.025);
+}
+
+.btn:hover{
+    transform:translateY(-4px);
+}
+
+.btn-primary:hover{
+    box-shadow:
+    0 15px 55px rgba(113,74,255,.5);
+}
+
+/* =========================================================
+   HERO VISUAL
+========================================================= */
+
+.hero-visual{
+    position:relative;
+    min-height:570px;
+}
+
+.orbit{
+    position:absolute;
+    width:480px;
+    height:480px;
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    border:1px solid rgba(139,92,255,.22);
+    border-radius:50%;
+
+    animation:spin 18s linear infinite;
+}
+
+.orbit::before,
+.orbit::after{
+    content:"";
+    position:absolute;
+    width:12px;
+    height:12px;
+    border-radius:50%;
+
+    background:var(--blue);
+
+    box-shadow:
+    0 0 25px var(--blue),
+    0 0 50px var(--blue);
+}
+
+.orbit::before{
+    top:30px;
+    left:70px;
+}
+
+.orbit::after{
+    right:40px;
+    bottom:70px;
+    background:var(--pink);
+}
+
+@keyframes spin{
+    to{
+        transform:translate(-50%,-50%) rotate(360deg);
+    }
+}
+
+.editor-screen{
+    position:absolute;
+    left:50%;
+    top:50%;
+
+    width:min(520px,90%);
+    aspect-ratio:16/10;
+
+    transform:
+    translate(-50%,-50%)
+    perspective(1000px)
+    rotateY(-12deg)
+    rotateX(5deg);
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(255,255,255,.11),
+        rgba(255,255,255,.025)
+    );
+
+    border:1px solid rgba(255,255,255,.18);
+
+    box-shadow:
+    0 40px 100px rgba(0,0,0,.7),
+    0 0 80px rgba(108,73,255,.25);
+
+    overflow:hidden;
+
+    animation:
+    floatScreen 5s ease-in-out infinite;
+}
+
+@keyframes floatScreen{
+    0%,100%{
+        transform:
+        translate(-50%,-50%)
+        perspective(1000px)
+        rotateY(-12deg)
+        translateY(0);
+    }
+
+    50%{
+        transform:
+        translate(-50%,-50%)
+        perspective(1000px)
+        rotateY(-12deg)
+        translateY(-12px);
+    }
+}
+
+.screen-top{
+    height:45px;
+    background:#11111a;
+    border-bottom:1px solid #292934;
+
+    display:flex;
+    align-items:center;
+    padding:0 16px;
+    gap:7px;
+}
+
+.dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:#ff4d6d;
+}
+
+.dot:nth-child(2){
+    background:#ffc857;
+}
+
+.dot:nth-child(3){
+    background:#50fa7b;
+}
+
+.screen-content{
+    height:calc(100% - 45px);
+    display:grid;
+    grid-template-columns:90px 1fr;
+}
+
+.tools{
+    background:#0b0b12;
+    border-right:1px solid #24242d;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding-top:20px;
+    gap:22px;
+
+    color:#70707c;
+}
+
+.tools div{
+    width:30px;
+    height:30px;
+    border-radius:8px;
+    display:grid;
+    place-items:center;
+    border:1px solid transparent;
+}
+
+.tools div:first-child{
+    color:var(--blue);
+    border-color:rgba(0,217,255,.2);
+    background:rgba(0,217,255,.05);
+}
+
+.timeline{
+    position:relative;
+    overflow:hidden;
+}
+
+.preview{
+    height:70%;
+    margin:15px;
+    border-radius:12px;
+
+    background:
+    radial-gradient(circle at 70% 30%,#7a34d9,transparent 25%),
+    radial-gradient(circle at 30% 70%,#0069a8,transparent 25%),
+    linear-gradient(130deg,#111827,#030712);
+
+    position:relative;
+    overflow:hidden;
+}
+
+.preview::before{
+    content:"";
+    position:absolute;
+    inset:-50%;
+
+    background:
+    conic-gradient(
+        transparent,
+        rgba(255,255,255,.15),
+        transparent 30%
+    );
+
+    animation:previewSpin 6s linear infinite;
+}
+
+@keyframes previewSpin{
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+.play{
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+}
+
+.play span{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+
+    display:grid;
+    place-items:center;
+
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.3);
+
+    backdrop-filter:blur(10px);
+}
+
+.clips{
+    height:25%;
+    display:flex;
+    gap:6px;
+    padding:0 15px;
+}
+
+.clip{
+    height:100%;
+    border-radius:5px;
+
+    background:
+    linear-gradient(
+        135deg,
+        var(--purple),
+        var(--pink)
+    );
+
+    flex:1;
+}
+
+.clip:nth-child(2){
+    background:
+    linear-gradient(
+        135deg,
+        #008cff,
+        #00e5ff
+    );
+}
+
+.clip:nth-child(3){
+    background:
+    linear-gradient(
+        135deg,
+        #ff7917,
+        #ffcb45
+    );
+}
+
+.floating-word{
+    position:absolute;
+    font-family:"Space Grotesk";
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:3px;
+    color:white;
+
+    padding:12px 18px;
+
+    border-radius:100px;
+
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);
+
+    backdrop-filter:blur(15px);
+
+    box-shadow:0 10px 40px rgba(0,0,0,.4);
+}
+
+.word1{
+    top:70px;
+    right:-20px;
+
+    animation:
+    float1 4s ease-in-out infinite;
+}
+
+.word2{
+    bottom:90px;
+    left:-35px;
+
+    animation:
+    float2 5s ease-in-out infinite;
+}
+
+@keyframes float1{
+    50%{
+        transform:translateY(-15px) rotate(3deg);
+    }
+}
+
+@keyframes float2{
+    50%{
+        transform:translateY(15px) rotate(-3deg);
+    }
+}
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats{
+    border-top:1px solid rgba(255,255,255,.08);
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+    background:
+    linear-gradient(
+        90deg,
+        rgba(0,217,255,.03),
+        rgba(139,92,255,.05),
+        rgba(255,53,201,.03)
+    );
+}
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+}
+
+.stat{
+    padding:35px 20px;
+    text-align:center;
+    border-right:1px solid rgba(255,255,255,.08);
+}
+
+.stat:last-child{
+    border:0;
+}
+
+.stat strong{
+    display:block;
+    font-family:"Space Grotesk";
+    font-size:30px;
+}
+
+.stat span{
+    color:#777782;
+    font-size:10px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+}
+
+/* =========================================================
+   SERVICES
+========================================================= */
+
+.services-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-top:55px;
+}
+
+.service{
+    min-height:320px;
+    padding:25px;
+
+    border-radius:var(--radius);
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(255,255,255,.07),
+        rgba(255,255,255,.015)
+    );
+
+    border:1px solid var(--border);
+
+    position:relative;
+    overflow:hidden;
+
+    transition:
+    transform .4s,
+    border .4s;
+}
+
+.service::before{
+    content:"";
+    position:absolute;
+    width:180px;
+    height:180px;
+
+    right:-80px;
+    top:-80px;
+
+    border-radius:50%;
+
+    background:
+    radial-gradient(
+        circle,
+        rgba(139,92,255,.3),
+        transparent 65%
+    );
+
+    filter:blur(15px);
+}
+
+.service:hover{
+    transform:translateY(-10px);
+    border-color:rgba(139,92,255,.45);
+}
+
+.service-icon{
+    width:55px;
+    height:55px;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:15px;
+
+    background:rgba(139,92,255,.1);
+
+    border:1px solid rgba(139,92,255,.25);
+
+    font-size:23px;
+
+    margin-bottom:55px;
+}
+
+.service h3{
+    font-family:"Space Grotesk";
+    font-size:22px;
+}
+
+.service p{
+    margin-top:12px;
+    color:#858591;
+    font-size:12px;
+    line-height:1.7;
+}
+
+.service-link{
+    position:absolute;
+    bottom:25px;
+
+    font-size:11px;
+    color:#bbb;
+}
+
+/* =========================================================
+   PORTFOLIO
+========================================================= */
+
+.portfolio-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:end;
+    gap:30px;
+}
+
+.portfolio{
+    margin-top:55px;
+
+    display:grid;
+    grid-template-columns:
+    repeat(12,1fr);
+
+    gap:15px;
+}
+
+.project{
+    position:relative;
+    min-height:330px;
+
+    border-radius:22px;
+    overflow:hidden;
+
+    border:1px solid rgba(255,255,255,.1);
+
+    background:#101018;
+
+    transform-style:preserve-3d;
+}
+
+.project:nth-child(1){
+    grid-column:span 7;
+}
+
+.project:nth-child(2){
+    grid-column:span 5;
+}
+
+.project:nth-child(3){
+    grid-column:span 5;
+}
+
+.project:nth-child(4){
+    grid-column:span 7;
+}
+
+.project:nth-child(5){
+    grid-column:span 4;
+}
+
+.project:nth-child(6){
+    grid-column:span 4;
+}
+
+.project:nth-child(7){
+    grid-column:span 4;
+}
+
+.project-bg{
+    position:absolute;
+    inset:0;
+
+    transition:
+    transform .8s cubic-bezier(.2,.8,.2,1),
+    filter .5s;
+}
+
+.project:hover .project-bg{
+    transform:scale(1.08);
+    filter:saturate(1.3);
+}
+
+.project1{
+    background:
+    radial-gradient(circle at 70% 20%,#b43cff,transparent 25%),
+    linear-gradient(135deg,#041e3e,#020207 65%);
+}
+
+.project2{
+    background:
+    radial-gradient(circle at 30% 30%,#ff7a18,transparent 20%),
+    linear-gradient(135deg,#121a36,#020207);
+}
+
+.project3{
+    background:
+    radial-gradient(circle at 65% 45%,#00e5ff,transparent 25%),
+    linear-gradient(135deg,#071928,#030308);
+}
+
+.project4{
+    background:
+    radial-gradient(circle at 30% 40%,#ff2dbd,transparent 25%),
+    linear-gradient(135deg,#22082c,#030208);
+}
+
+.project5{
+    background:
+    linear-gradient(
+        135deg,
+        #120e29,
+        #5c27a6,
+        #050509
+    );
+}
+
+.project6{
+    background:
+    linear-gradient(
+        135deg,
+        #09252a,
+        #0089a7,
+        #020509
+    );
+}
+
+.project7{
+    background:
+    linear-gradient(
+        135deg,
+        #301b08,
+        #ff761b,
+        #050509
+    );
+}
+
+.project-overlay{
+    position:absolute;
+    inset:0;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:end;
+
+    padding:28px;
+
+    background:
+    linear-gradient(
+        transparent 20%,
+        rgba(0,0,0,.85)
+    );
+}
+
+.project-tag{
+    font-size:9px;
+    letter-spacing:3px;
+    color:#9e9eaa;
+    text-transform:uppercase;
+}
+
+.project h3{
+    margin-top:7px;
+
+    font-family:"Space Grotesk";
+    font-size:25px;
+}
+
+.project p{
+    margin-top:7px;
+
+    color:#a0a0aa;
+    font-size:11px;
+}
+
+/* =========================================================
+   ABOUT
+========================================================= */
+
+.about{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:70px;
+    align-items:center;
+}
+
+.about-visual{
+    min-height:500px;
+    border-radius:30px;
+
+    position:relative;
+    overflow:hidden;
+
+    background:
+    radial-gradient(
+        circle at 50% 30%,
+        rgba(0,217,255,.25),
+        transparent 20%
+    ),
+    linear-gradient(
+        145deg,
+        #11132b,
+        #030307
+    );
+
+    border:1px solid rgba(255,255,255,.12);
+}
+
+.about-visual::before{
+    content:"VFX";
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    font-family:"Space Grotesk";
+    font-size:180px;
+    font-weight:900;
+
+    color:transparent;
+
+    -webkit-text-stroke:1px rgba(255,255,255,.12);
+
+    letter-spacing:-15px;
+}
+
+.about-circle{
+    position:absolute;
+
+    width:250px;
+    height:250px;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    border-radius:50%;
+
+    border:1px solid rgba(255,255,255,.15);
+
+    box-shadow:
+    inset 0 0 60px rgba(0,217,255,.1),
+    0 0 80px rgba(139,92,255,.15);
+
+    animation:spin 14s linear infinite;
+}
+
+.about-circle::before{
+    content:"";
+
+    position:absolute;
+    inset:35px;
+
+    border-radius:50%;
+
+    border:1px dashed rgba(255,53,201,.4);
+}
+
+.about-info{
+    margin-top:35px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+}
+
+.about-number{
+    padding:20px 0;
+    border-top:1px solid rgba(255,255,255,.1);
+}
+
+.about-number strong{
+    display:block;
+    font-size:24px;
+}
+
+.about-number span{
+    color:#777783;
+    font-size:9px;
+    letter-spacing:1px;
+}
+
+/* =========================================================
+   PROCESS
+========================================================= */
+
+.process-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+
+    margin-top:55px;
+
+    border:1px solid rgba(255,255,255,.1);
+}
+
+.process{
+    min-height:220px;
+    padding:30px;
+
+    background:rgba(255,255,255,.025);
+
+    border-right:1px solid rgba(255,255,255,.1);
+}
+
+.process:last-child{
+    border:0;
+}
+
+.process-num{
+    font-family:"Space Grotesk";
+    font-size:50px;
+    color:rgba(255,255,255,.12);
+}
+
+.process h3{
+    margin-top:25px;
+    font-size:17px;
+}
+
+.process p{
+    margin-top:10px;
+    color:#777783;
+    font-size:11px;
+    line-height:1.7;
+}
+
+/* =========================================================
+   TESTIMONIALS
+========================================================= */
+
+.testimonials{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-top:50px;
+}
+
+.testimonial{
+    padding:30px;
+
+    border-radius:22px;
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(255,255,255,.06),
+        rgba(255,255,255,.015)
+    );
+
+    border:1px solid rgba(255,255,255,.1);
+}
+
+.stars{
+    color:#ffc857;
+    letter-spacing:4px;
+}
+
+.testimonial p{
+    color:#a0a0ab;
+    font-size:13px;
+    line-height:1.8;
+    margin:25px 0;
+}
+
+.client{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.avatar{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+
+    background:
+    linear-gradient(
+        135deg,
+        var(--blue),
+        var(--purple),
+        var(--pink)
+    );
+}
+
+.client strong{
+    display:block;
+    font-size:12px;
+}
+
+.client span{
+    display:block;
+    font-size:9px;
+    color:#6e6e79;
+    margin-top:3px;
+}
+
+/* =========================================================
+   CTA
+========================================================= */
+
+.cta{
+    text-align:center;
+    padding:150px 0;
+
+    overflow:hidden;
+}
+
+.cta::before{
+    content:"";
+
+    position:absolute;
+
+    width:900px;
+    height:350px;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    background:
+    radial-gradient(
+        ellipse,
+        rgba(139,92,255,.2),
+        transparent 65%
+    );
+
+    filter:blur(30px);
+}
+
+.cta h2{
+    position:relative;
+
+    font-family:"Space Grotesk";
+    font-size:clamp(50px,8vw,105px);
+
+    line-height:.9;
+    letter-spacing:-5px;
+}
+
+.cta h2 span{
+    background:
+    linear-gradient(
+        90deg,
+        var(--blue),
+        var(--purple),
+        var(--pink),
+        var(--orange)
+    );
+
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+.cta p{
+    position:relative;
+    color:#898995;
+    margin:25px auto;
+    max-width:500px;
+    line-height:1.7;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer{
+    border-top:1px solid rgba(255,255,255,.08);
+    padding:35px 0;
+}
+
+.footer-inner{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.footer-copy{
+    color:#666672;
+    font-size:10px;
+}
+
+.socials{
+    display:flex;
+    gap:15px;
+}
+
+.socials a{
+    width:35px;
+    height:35px;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:50%;
+
+    border:1px solid rgba(255,255,255,.12);
+
+    color:#999;
+    font-size:11px;
+
+    transition:.3s;
+}
+
+.socials a:hover{
+    color:white;
+    border-color:var(--purple);
+    box-shadow:0 0 20px rgba(139,92,255,.3);
+}
+
+/* =========================================================
+   REVEAL
+========================================================= */
+
+.reveal{
+    opacity:0;
+    transform:translateY(50px);
+
+    transition:
+    opacity 1s ease,
+    transform 1s cubic-bezier(.2,.8,.2,1);
+}
+
+.reveal.visible{
+    opacity:1;
+    transform:none;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:900px){
+
+    .nav-links,
+    .nav-btn{
+        display:none;
+    }
+
+    .menu{
+        display:block;
+    }
+
+    .hero{
+        padding-top:130px;
+    }
+
+    .hero-grid{
+        grid-template-columns:1fr;
+    }
+
+    .hero h1{
+        font-size:
+        clamp(52px,14vw,90px);
+
+        letter-spacing:-4px;
+    }
+
+    .hero-visual{
+        min-height:480px;
+    }
+
+    .orbit{
+        width:360px;
+        height:360px;
+    }
+
+    .stats-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .stat:nth-child(2){
+        border-right:0;
+    }
+
+    .stat:nth-child(-n+2){
+        border-bottom:1px solid rgba(255,255,255,.08);
+    }
+
+    .services-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .portfolio{
+        grid-template-columns:1fr;
+    }
+
+    .project,
+    .project:nth-child(n){
+        grid-column:span 1;
+        min-height:330px;
+    }
+
+    .about{
+        grid-template-columns:1fr;
+    }
+
+    .process-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .process:nth-child(2){
+        border-right:0;
+    }
+
+    .process:nth-child(-n+2){
+        border-bottom:1px solid rgba(255,255,255,.1);
+    }
+
+    .testimonials{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:550px){
+
+    section{
+        padding:90px 0;
+    }
+
+    .nav-inner{
+        height:68px;
+    }
+
+    .logo-mark{
+        width:34px;
+        height:34px;
+    }
+
+    .hero{
+        min-height:auto;
+        padding-bottom:60px;
+    }
+
+    .hero h1{
+        font-size:52px;
+    }
+
+    .hero-desc{
+        font-size:13px;
+    }
+
+    .hero-buttons{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .btn{
+        width:100%;
+    }
+
+    .hero-visual{
+        min-height:370px;
+    }
+
+    .editor-screen{
+        width:95%;
+    }
+
+    .orbit{
+        width:280px;
+        height:280px;
+    }
+
+    .word1{
+        right:-5px;
+    }
+
+    .word2{
+        left:-5px;
+    }
+
+    .services-grid{
+        grid-template-columns:1fr;
+    }
+
+    .service{
+        min-height:280px;
+    }
+
+    .section-title{
+        font-size:47px;
+        letter-spacing:-2px;
+    }
+
+    .portfolio-head{
+        display:block;
+    }
+
+    .portfolio-head .btn{
+        width:auto;
+        margin-top:25px;
+    }
+
+    .about-visual{
+        min-height:350px;
+    }
+
+    .about-visual::before{
+        font-size:110px;
+    }
+
+    .about-info{
+        grid-template-columns:1fr;
+    }
+
+    .process-grid{
+        grid-template-columns:1fr;
+    }
+
+    .process,
+    .process:nth-child(2){
+        border-right:0;
+        border-bottom:1px solid rgba(255,255,255,.1);
+    }
+
+    .process:last-child{
+        border-bottom:0;
+    }
+
+    .footer-inner{
+        flex-direction:column;
+        gap:20px;
+        text-align:center;
+    }
+
+    .cursor,
+    .cursor-glow{
+        display:none;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<canvas id="vfxCanvas"></canvas>
+
+<div class="cursor"></div>
+<div class="cursor-glow"></div>
+
+
+<!-- ======================================================
+     NAVIGATION
+====================================================== -->
+
+<header class="nav">
+
+    <div class="nav-inner">
+
+        <a href="#" class="logo">
+
+            <div class="logo-mark"></div>
+
+            <div>
+                FRAMEFORGE
+                <small>IDEAS TO VISUALS</small>
+            </div>
+
+        </a>
+
+
+        <nav class="nav-links">
+
+            <a href="#home">Home</a>
+            <a href="#services">Services</a>
+            <a href="#portfolio">Portfolio</a>
+            <a href="#about">About</a>
+            <a href="#process">Process</a>
+            <a href="#contact">Contact</a>
+
+        </nav>
+
+
+        <a href="#contact" class="nav-btn">
+            GET A QUOTE →
+        </a>
+
+        <div class="menu">
+            ☰
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- ======================================================
+     HERO
+====================================================== -->
+
+<section class="hero" id="home">
+
+<div class="container">
+
+<div class="hero-grid">
+
+
+<div class="hero-content reveal">
+
+<div class="eyebrow">
+VIDEO EDITOR • VFX • MOTION • GRAPHIC DESIGNING
+</div>
+
+<h1>
+
+<span class="line">
+Turn Your Ideas
+</span>
+
+<span class="line gradient">
+Into Visual Magic
+</span>
+
+</h1>
+
+<p class="hero-desc">
+
+I transform raw footage, ideas and brands into cinematic
+experiences through video editing, VFX, motion graphics
+and powerful visual design.
+
+</p>
+
+
+<div class="hero-buttons">
+
+<a href="#portfolio"
+class="btn btn-primary magnetic">
+
+EXPLORE MY WORK →
+</a>
+
+<a href="#contact"
+class="btn btn-outline magnetic">
+
+LET'S CREATE
+
+</a>
+
+</div>
+
+</div>
+
+
+<!-- HERO VISUAL -->
+
+<div class="hero-visual reveal">
+
+<div class="orbit"></div>
+
+<div class="floating-word word1">
+MOTION / VFX
+</div>
+
+<div class="floating-word word2">
+EDIT • CREATE • REPEAT
+</div>
+
+
+<div class="editor-screen">
+
+<div class="screen-top">
+
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+
+</div>
+
+
+<div class="screen-content">
+
+<div class="tools">
+
+<div>✦</div>
+<div>◈</div>
+<div>⌁</div>
+<div>◇</div>
+<div>◎</div>
+
+</div>
+
+
+<div class="timeline">
+
+<div class="preview">
+
+<div class="play">
+<span>▶</span>
+</div>
+
+</div>
+
+
+<div class="clips">
+
+<div class="clip"></div>
+<div class="clip"></div>
+<div class="clip"></div>
+<div class="clip"></div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+     STATS
+====================================================== -->
+
+<section class="stats">
+
+<div class="container">
+
+<div class="stats-grid">
+
+<div class="stat reveal">
+<strong data-count="100">0+</strong>
+<span>Projects Completed</span>
+</div>
+
+<div class="stat reveal">
+<strong data-count="5">0+</strong>
+<span>Years Experience</span>
+</div>
+
+<div class="stat reveal">
+<strong data-count="100">0%</strong>
+<span>Creative Energy</span>
+</div>
+
+<div class="stat reveal">
+<strong>24/7</strong>
+<span>Creative Support</span>
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+     SERVICES
+====================================================== -->
+
+<section id="services">
+
+<div class="container">
+
+<div class="reveal">
+
+<div class="eyebrow">
+WHAT I DO
+</div>
+
+<h2 class="section-title">
+Creative <span>Services</span>
+</h2>
+
+<p class="section-desc">
+
+From raw footage to cinematic masterpieces,
+I create visuals designed to stop the scroll
+and hold attention.
+
+</p>
+
+</div>
+
+
+<div class="services-grid">
+
+
+<div class="service reveal tilt">
+
+<div class="service-icon">
+🎬
+</div>
+
+<h3>
+Video Editing
+</h3>
+
+<p>
+YouTube videos, reels, ads, wedding films,
+brand films and cinematic storytelling.
+</p>
+
+<a href="#contact" class="service-link">
+LET'S EDIT →
+</a>
+
+</div>
+
+
+<div class="service reveal tilt">
+
+<div class="service-icon">
+✦
+</div>
+
+<h3>
+Motion Graphics
+</h3>
+
+<p>
+Dynamic typography, logo animation,
+transitions and eye-catching motion design.
+</p>
+
+<a href="#contact" class="service-link">
+BRING IT TO LIFE →
+</a>
+
+</div>
+
+
+<div class="service reveal tilt">
+
+<div class="service-icon">
+◈
+</div>
+
+<h3>
+VFX & Compositing
+</h3>
+
+<p>
+Cinematic effects, compositing, tracking,
+screen replacement and visual storytelling.
+</p>
+
+<a href="#contact" class="service-link">
+CREATE THE IMPOSSIBLE →
+</a>
+
+</div>
+
+
+<div class="service reveal tilt">
+
+<div class="service-icon">
+▣
+</div>
+
+<h3>
+Graphic Design
+</h3>
+
+<p>
+Thumbnails, posters, social media graphics,
+branding and campaign visuals.
+</p>
+
+<a href="#contact" class="service-link">
+DESIGN SOMETHING BOLD →
+</a>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+     PORTFOLIO
+====================================================== -->
+
+<section id="portfolio">
+
+<div class="container">
+
+<div class="portfolio-head reveal">
+
+<div>
+
+<div class="eyebrow">
+SELECTED WORK
+</div>
+
+<h2 class="section-title">
+Real Projects.
+<span>Real Impact.</span>
+</h2>
+
+<p class="section-desc">
+
+A selection of visual work created for brands,
+creators and ambitious ideas.
+
+</p>
+
+</div>
+
+<a href="#contact" class="btn btn-outline">
+START A PROJECT →
+</a>
+
+</div>
+
+
+<div class="portfolio">
+
+
+<div class="project project1 reveal tilt">
+
+<div class="project-bg"></div>
+
+<div class="project-overlay">
+
+<span class="project-tag">
+VIDEO EDITING
+</span>
+
+<h3>
+Cinematic Brand Film
+</h3>
+
+<p>
+Editing • Color • Sound Design
+</p>
+
+</div>
+
+</div>
+
+
+<div class="project project2 reveal tilt">
+
+<div class="project-bg"></div>
+
+<div class="project-overlay">
+
+<span class="project-tag">
+MOTION GRAPHICS
+</span>
+
+<h3>
+Neon Product Launch
+</h3>
+
+<p>
+3D • Motion • Compositing
+</p>
+
+</div>
+
+</div>
+
+
+<div class="project project3 reveal tilt">
+
+<div class="project-bg"></div>
+
+<div class="project-overlay">
+
+<span class="project-tag">
+VFX
+</span>
+
+<h3>
+Future World
+</h3>
+
+<p>
+VFX • Tracking • Compositing
+</p>
+
+</div>
+
+</div>
+
+
+<div class="project project4 reveal tilt">
+
+<div class="project-bg"></div>
+
+<div class="project-overlay">
+
+<span class="project-tag">
+SOCIAL MEDIA
+</span>
+
+<h3>
+Scroll Stopper
+</h3>
+
+<p>
+Reels • Typography • Motion
+</p>
+
+</div>
+
+</div>
+
+
+<div class="project project5 reveal tilt">
+
+<div class="project-bg"></div>
+
+<div class="project-overlay">
+
+<span class="project-tag">
+GRAPHIC DESIGN
+</span>
+
+<h3>
+Visual Identity
+</h3>
+
+<p>
+Branding • Posters • Campaign
+</p>
+
+</div>
+
+</div>
+
+
+<div class="project project6 reveal tilt">
+
+<div class="project-bg"></div>
+
+<div class="project-overlay">
+
+<span class="project-tag">
+MOTION
+</span>
+
+<h3>
+Tech Explainer
+</h3>
+
+<p>
+2D Motion • UI Animation
+</p>
+
+</div>
+
+</div>
+
+
+<div class="project project7 reveal tilt">
+
+<div class="project-bg"></div>
+
+<div class="project-overlay">
+
+<span class="project-tag">
+ADVERTISING
+</span>
+
+<h3>
+Product Ad
+</h3>
+
+<p>
+Editing • VFX • Sound Design
+</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+     ABOUT
+====================================================== -->
+
+<section id="about">
+
+<div class="container">
+
+<div class="about">
+
+<div class="about-visual reveal">
+
+<div class="about-circle"></div>
+
+</div>
+
+
+<div class="reveal">
+
+<div class="eyebrow">
+ABOUT THE CREATOR
+</div>
+
+<h2 class="section-title">
+
+Passionate Creator.
+<span>Visual Storyteller.</span>
+
+</h2>
+
+<p class="section-desc">
+
+I'm a video editor and graphic designer obsessed
+with turning ordinary ideas into unforgettable
+visual experiences.
+
+Every cut, frame, transition and design element
+has one purpose — to make people stop and look.
+
+</p>
+
+
+<div class="about-info">
+
+<div class="about-number">
+
+<strong>05+</strong>
+<span>YEARS EXPERIENCE</span>
+
+</div>
+
+<div class="about-number">
+
+<strong>100+</strong>
+<span>PROJECTS</span>
+
+</div>
+
+<div class="about-number">
+
+<strong>50+</strong>
+<span>HAPPY CLIENTS</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+     PROCESS
+====================================================== -->
+
+<section id="process">
+
+<div class="container">
+
+<div class="reveal">
+
+<div class="eyebrow">
+HOW IT WORKS
+</div>
+
+<h2 class="section-title">
+From Idea <span>To Impact.</span>
+</h2>
+
+</div>
+
+
+<div class="process-grid">
+
+
+<div class="process reveal">
+
+<div class="process-num">
+01
+</div>
+
+<h3>
+Discover
+</h3>
+
+<p>
+We understand your idea, audience,
+style and creative direction.
+</p>
+
+</div>
+
+
+<div class="process reveal">
+
+<div class="process-num">
+02
+</div>
+
+<h3>
+Create
+</h3>
+
+<p>
+Editing, design, motion graphics and
+visual effects come together.
+</p>
+
+</div>
+
+
+<div class="process reveal">
+
+<div class="process-num">
+03
+</div>
+
+<h3>
+Refine
+</h3>
+
+<p>
+Every frame is polished until the
+visual language feels perfect.
+</p>
+
+</div>
+
+
+<div class="process reveal">
+
+<div class="process-num">
+04
+</div>
+
+<h3>
+Deliver
+</h3>
+
+<p>
+Final high-quality content ready
+for your audience and platform.
+</p>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+     TESTIMONIALS
+====================================================== -->
+
+<section>
+
+<div class="container">
+
+<div class="reveal">
+
+<div class="eyebrow">
+CLIENT LOVE
+</div>
+
+<h2 class="section-title">
+What Clients <span>Say.</span>
+</h2>
+
+</div>
+
+
+<div class="testimonials">
+
+
+<div class="testimonial reveal">
+
+<div class="stars">
+★★★★★
+</div>
+
+<p>
+
+"The editing completely changed the way
+our brand looked online. The attention to
+detail was incredible."
+
+</p>
+
+<div class="client">
+
+<div class="avatar"></div>
+
+<div>
+
+<strong>Rahul Sharma</strong>
+<span>Founder • Creator</span>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="testimonial reveal">
+
+<div class="stars">
+★★★★★
+</div>
+
+<p>
+
+"Exactly the cinematic style we wanted.
+Fast communication, creative ideas and
+a seriously impressive final result."
+
+</p>
+
+<div class="client">
+
+<div class="avatar"></div>
+
+<div>
+
+<strong>Priya Mehta</strong>
+<span>Brand Owner</span>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="testimonial reveal">
+
+<div class="stars">
+★★★★★
+</div>
+
+<p>
+
+"The motion graphics made our campaign
+stand out immediately. Would definitely
+work together again."
+
+</p>
+
+<div class="client">
+
+<div class="avatar"></div>
+
+<div>
+
+<strong>Arjun Kapoor</strong>
+<span>Creative Director</span>
+
+</div>
+
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+     CTA
+====================================================== -->
+
+<section class="cta" id="contact">
+
+<div class="container">
+
+<div class="reveal">
+
+<div class="eyebrow">
+HAVE AN IDEA?
+</div>
+
+<h2>
+Let's Make<br>
+<span>Something Unreal.</span>
+</h2>
+
+<p>
+
+Got a video, brand, campaign or crazy idea?
+Let's turn it into something people remember.
+
+</p>
+
+<a
+href="mailto:hello@frameforge.com"
+class="btn btn-primary magnetic">
+
+START A PROJECT →
+
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+     FOOTER
+====================================================== -->
+
+<footer>
+
+<div class="container">
+
+<div class="footer-inner">
+
+<div class="logo">
+
+<div class="logo-mark"></div>
+
+<div>
+FRAMEFORGE
+<small>IDEAS TO VISUALS</small>
+</div>
+
+</div>
+
+
+<div class="footer-copy">
+© 2026 FrameForge. All rights reserved.
+</div>
+
+
+<div class="socials">
+
+<a href="#" aria-label="Instagram">
+IG
+</a>
+
+<a href="#" aria-label="YouTube">
+YT
+</a>
+
+<a href="#" aria-label="Behance">
+BE
+</a>
+
+<a href="#" aria-label="LinkedIn">
+IN
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</footer>
+
+
+<script>
+
+/* =========================================================
+   CURSOR
+========================================================= */
+
+const cursor =
+document.querySelector(".cursor");
+
+const cursorGlow =
+document.querySelector(".cursor-glow");
+
+let mouseX = 0;
+let mouseY = 0;
+
+let glowX = 0;
+let glowY = 0;
+
+document.addEventListener("mousemove",(e)=>{
+
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+
+    cursor.style.left =
+    mouseX + "px";
+
+    cursor.style.top =
+    mouseY + "px";
+
+});
+
+
+function animateGlow(){
+
+    glowX +=
+    (mouseX - glowX) * .08;
+
+    glowY +=
+    (mouseY - glowY) * .08;
+
+    cursorGlow.style.left =
+    glowX + "px";
+
+    cursorGlow.style.top =
+    glowY + "px";
+
+    requestAnimationFrame(animateGlow);
+}
+
+animateGlow();
+
+
+/* =========================================================
+   CURSOR HOVER
+========================================================= */
+
+document
+.querySelectorAll("a,.service,.project,.btn")
+.forEach(el=>{
+
+    el.addEventListener("mouseenter",()=>{
+
+        cursor.style.width="45px";
+        cursor.style.height="45px";
+
+        cursor.style.background=
+        "rgba(139,92,255,.12)";
+
+        cursor.style.borderColor=
+        "#8b5cff";
+
+    });
+
+    el.addEventListener("mouseleave",()=>{
+
+        cursor.style.width="18px";
+        cursor.style.height="18px";
+
+        cursor.style.background="transparent";
+
+        cursor.style.borderColor=
+        "rgba(255,255,255,.7)";
+
+    });
+
+});
+
+
+/* =========================================================
+   SCROLL REVEAL
+========================================================= */
+
+const observer =
+new IntersectionObserver(
+(entries)=>{
+
+entries.forEach(entry=>{
+
+if(entry.isIntersecting){
+
+entry.target.classList.add("visible");
+
+}
+
+});
+
+},
+{
+threshold:.12
+});
+
+
+document
+.querySelectorAll(".reveal")
+.forEach(el=>observer.observe(el));
+
+
+/* =========================================================
+   COUNTER
+========================================================= */
+
+const counters =
+document.querySelectorAll("[data-count]");
+
+const counterObserver =
+new IntersectionObserver(
+(entries)=>{
+
+entries.forEach(entry=>{
+
+if(!entry.isIntersecting)
+return;
+
+const el =
+entry.target;
+
+const target =
+Number(el.dataset.count);
+
+let current = 0;
+
+const duration = 1200;
+
+const start =
+performance.now();
+
+function update(time){
+
+const progress =
+Math.min(
+(time-start)/duration,
+1
+);
+
+current =
+Math.floor(
+progress * target
+);
+
+el.textContent =
+current +
+(target === 100 ? "+" : "+");
+
+if(progress < 1){
+
+requestAnimationFrame(update);
+
+}
+
+}
+
+requestAnimationFrame(update);
+
+counterObserver.unobserve(el);
+
+});
+
+},
+{
+threshold:.8
+});
+
+
+counters.forEach(
+el=>counterObserver.observe(el)
+);
+
+
+/* =========================================================
+   TILT CARDS
+========================================================= */
+
+document
+.querySelectorAll(".tilt")
+.forEach(card=>{
+
+card.addEventListener("mousemove",(e)=>{
+
+const rect =
+card.getBoundingClientRect();
+
+const x =
+e.clientX - rect.left;
+
+const y =
+e.clientY - rect.top;
+
+const centerX =
+rect.width/2;
+
+const centerY =
+rect.height/2;
+
+const rotateX =
+((y-centerY)/centerY)*-4;
+
+const rotateY =
+((x-centerX)/centerX)*4;
+
+card.style.transform =
+`perspective(900px)
+ rotateX(${rotateX}deg)
+ rotateY(${rotateY}deg)
+ translateY(-5px)`;
+
+});
+
+card.addEventListener("mouseleave",()=>{
+
+card.style.transform =
+"perspective(900px) rotateX(0) rotateY(0) translateY(0)";
+
+});
+
+});
+
+
+/* =========================================================
+   MAGNETIC BUTTONS
+========================================================= */
+
+document
+.querySelectorAll(".magnetic")
+.forEach(btn=>{
+
+btn.addEventListener("mousemove",(e)=>{
+
+const rect =
+btn.getBoundingClientRect();
+
+const x =
+e.clientX - rect.left - rect.width/2;
+
+const y =
+e.clientY - rect.top - rect.height/2;
+
+btn.style.transform =
+`translate(${x*.12}px,${y*.12}px)`;
+
+});
+
+btn.addEventListener("mouseleave",()=>{
+
+btn.style.transform =
+"translate(0,0)";
+
+});
+
+});
+
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+const menu =
+document.querySelector(".menu");
+
+const navLinks =
+document.querySelector(".nav-links");
+
+menu.addEventListener("click",()=>{
+
+if(
+navLinks.style.display === "flex"
+){
+
+navLinks.style.display="none";
+
+}else{
+
+navLinks.style.display="flex";
+
+navLinks.style.position="absolute";
+
+navLinks.style.top="68px";
+
+navLinks.style.left="0";
+
+navLinks.style.width="100%";
+
+navLinks.style.padding="25px";
+
+navLinks.style.flexDirection="column";
+
+navLinks.style.background=
+"rgba(5,5,9,.97)";
+
+navLinks.style.backdropFilter=
+"blur(20px)";
+
+}
+
+});
+
+
+/* =========================================================
+   VFX PARTICLE SYSTEM
+========================================================= */
+
+const canvas =
+document.getElementById("vfxCanvas");
+
+const ctx =
+canvas.getContext("2d");
+
+let particles = [];
+
+let width;
+let height;
+
+function resizeCanvas(){
+
+width =
+canvas.width =
+window.innerWidth *
+devicePixelRatio;
+
+height =
+canvas.height =
+window.innerHeight *
+devicePixelRatio;
+
+canvas.style.width =
+window.innerWidth + "px";
+
+canvas.style.height =
+window.innerHeight + "px";
+
+ctx.scale(
+devicePixelRatio,
+devicePixelRatio
+);
+
+}
+
+resizeCanvas();
+
+window.addEventListener(
+"resize",
+resizeCanvas
+);
+
+
+class Particle{
+
+constructor(){
+
+this.x =
+Math.random()*window.innerWidth;
+
+this.y =
+Math.random()*window.innerHeight;
+
+this.size =
+Math.random()*1.8+.3;
+
+this.speedX =
+(Math.random()-.5)*.35;
+
+this.speedY =
+(Math.random()-.5)*.35;
+
+this.alpha =
+Math.random()*.5+.1;
+
+this.hue =
+Math.random()*100 + 200;
+
+}
+
+update(){
+
+this.x += this.speedX;
+
+this.y += this.speedY;
+
+if(this.x < 0)
+this.x = window.innerWidth;
+
+if(this.x > window.innerWidth)
+this.x = 0;
+
+if(this.y < 0)
+this.y = window.innerHeight;
+
+if(this.y > window.innerHeight)
+this.y = 0;
+
+}
+
+draw(){
+
+ctx.beginPath();
+
+ctx.arc(
+this.x,
+this.y,
+this.size,
+0,
+Math.PI*2
+);
+
+ctx.fillStyle =
+`hsla(
+${this.hue},
+100%,
+70%,
+${this.alpha}
+)`;
+
+ctx.fill();
+
+}
+
+}
+
+
+for(
+let i=0;
+i<130;
+i++
+){
+
+particles.push(
+new Particle()
+);
+
+}
+
+
+function connectParticles(){
+
+for(
+let a=0;
+a<particles.length;
+a++
+){
+
+for(
+let b=a+1;
+b<particles.length;
+b++
+){
+
+const dx =
+particles[a].x -
+particles[b].x;
+
+const dy =
+particles[a].y -
+particles[b].y;
+
+const distance =
+Math.sqrt(
+dx*dx + dy*dy
+);
+
+if(distance < 110){
+
+ctx.beginPath();
+
+ctx.moveTo(
+particles[a].x,
+particles[a].y
+);
+
+ctx.lineTo(
+particles[b].x,
+particles[b].y
+);
+
+ctx.strokeStyle =
+`rgba(
+139,
+92,
+255,
+${(1-distance/110)*.08}
+)`;
+
+ctx.lineWidth=.5;
+
+ctx.stroke();
+
+}
+
+}
+
+}
+
+}
+
+
+function animateParticles(){
+
+ctx.clearRect(
+0,
+0,
+window.innerWidth,
+window.innerHeight
+);
+
+particles.forEach(p=>{
+p.update();
+p.draw();
+});
+
+connectParticles();
+
+requestAnimationFrame(
+animateParticles
+);
+
+}
+
+animateParticles();
+
+
+/* =========================================================
+   MOUSE VFX DISTURBANCE
+========================================================= */
+
+document.addEventListener(
+"mousemove",
+(e)=>{
+
+particles.forEach(p=>{
+
+const dx =
+p.x-e.clientX;
+
+const dy =
+p.y-e.clientY;
+
+const distance =
+Math.sqrt(dx*dx+dy*dy);
+
+if(distance < 100){
+
+p.x +=
+(dx/distance)*1.5;
+
+p.y +=
+(dy/distance)*1.5;
+
+}
+
+});
+
+});
+
+
+/* =========================================================
+   HERO PARALLAX
+========================================================= */
+
+const heroVisual =
+document.querySelector(".hero-visual");
+
+document.addEventListener(
+"mousemove",
+(e)=>{
+
+if(window.innerWidth < 800)
+return;
+
+const x =
+(e.clientX/window.innerWidth-.5);
+
+const y =
+(e.clientY/window.innerHeight-.5);
+
+heroVisual.style.transform =
+`translate(
+${x*12}px,
+${y*12}px
+)`;
+
+});
+
+
+/* =========================================================
+   ACTIVE NAV
+========================================================= */
+
+const sections =
+document.querySelectorAll("section[id]");
+
+const navItems =
+document.querySelectorAll(
+".nav-links a"
+);
+
+window.addEventListener(
+"scroll",
+()=>{
+
+let current="";
+
+sections.forEach(section=>{
+
+const sectionTop =
+section.offsetTop - 200;
+
+if(
+window.scrollY >= sectionTop
+){
+
+current =
+section.getAttribute("id");
+
+}
+
+});
+
+navItems.forEach(link=>{
+
+link.style.color =
+link.getAttribute("href") ===
+"#"+current
+? "#fff"
+: "";
+
+});
+
+});
+
+
+</script>
+
+</body>
+</html>
